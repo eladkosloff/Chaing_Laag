@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relative Quantum Cohomology of the Chiang Lagrangian</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .slide {
+            display: none;
+            width: 90%;
+            max-width: 1000px;
+            padding: 60px 40px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .title-slide .main-title {
+            font-size: 2.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5em;
+            line-height: 1.2;
+        }
+        
+        .title-slide .subtitle {
+            font-size: 1.5em;
+            color: #34495e;
+            margin-bottom: 1em;
+            font-style: italic;
+        }
+        
+        .title-slide .authors {
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin-bottom: 0.8em;
+            line-height: 1.4;
+        }
+        
+        .speaker {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        
+        .venue {
+            font-size: 1em;
+            color: #7f8c8d;
+            margin-top: 2em;
+            font-style: italic;
+        }
+        
+        .slide h1 {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 0.8em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.3em;
+        }
+        
+        .slide h2 {
+            font-size: 1.8em;
+            color: #34495e;
+            margin: 1em 0 0.5em 0;
+        }
+        
+        .slide p, .slide li {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 0.8em;
+            text-align: left;
+        }
+        
+        .slide ul {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .slide ol {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .slide li {
+            margin-bottom: 0.6em;
+        }
+        
+        .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .illustration-box {
+            border: 2px dashed #bdc3c7;
+            padding: 20px;
+            margin: 1.5em auto;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            max-width: 700px;
+        }
+        
+        .illustration-box p {
+            font-size: 1.1em;
+            color: #34495e;
+            text-align: center;
+            font-style: italic;
+            margin: 0;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            margin: 1.5em 0;
+            border-radius: 1px;
+        }
+        
+        .center-text {
+            text-align: center;
+        }
+        
+        .theorem {
+            background-color: #f8f9fa;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .theorem h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+
+        .comparison-box {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 2em 0;
+            text-align: center;
+        }
+
+        .comparison-item {
+            flex: 1;
+            margin: 0 1em;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #e74c3c;
+            flex: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        
+        <div class="slide active title-slide">
+            <p class="subtitle">Counting Holomorphic Disks and Discovering Arithmetic Mysteries</p>
+            <h1 class="main-title">The Relative Quantum Cohomology of the Chiang Lagrangian</h1>
+            <hr>
+            <div class="authors">
+                Anna Hollands, <span class="speaker">Elad Kosloff</span>, May Sela,<br>
+                Qianyi Shu, and Jake P. Solomon
+            </div>
+            <div class="venue">
+                Mathematics Department Colloquium<br>
+                [University Name] – [Date]
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>A Classical Question 🎯</h1>
+            <div class="center-text" style="margin: 1.5em 0;">
+                <p style="font-size: 1.4em; color: #2980b9;">
+                    <strong>How many curves of a certain type pass through a given set of points?</strong>
+                </p>
+            </div>
+            <ul>
+                <li>Through 2 general points, there is <strong>1 line</strong>.</li>
+                <li>Through 5 general points, there is <strong>1 conic section</strong>.</li>
+                <li>Through 8 general points, there are <strong>12 rational cubics</strong>.</li>
+            </ul>
+            <br>
+            <p style="text-align: left; max-width: 800px; margin: 0 auto;">
+                This seems straightforward. But what happens if the points aren't "general"? What if we choose them in a special way?
+            </p>
+        </div>
+
+        <div class="slide">
+            <h1>The Degeneration Problem 🔄</h1>
+            <p style="text-align: left; max-width: 800px; margin: 0 auto;">
+                Suppose we move 5 points until 3 are on one line (L₁) and 2 are on another (L₂). The unique conic through them degenerates into a pair of lines.
+            </p>
+            <div style="text-align: center; margin: 1.5em 0;">
+                <svg width="400" height="150" viewBox="0 0 400 150">
+                    <ellipse cx="100" cy="75" rx="60" ry="40" fill="none" stroke="#3498db" stroke-width="2"/>
+                    <circle cx="60" cy="50" r="3" fill="#e74c3c"/>
+                    <circle cx="100" cy="35" r="3" fill="#e74c3c"/>
+                    <circle cx="140" cy="50" r="3" fill="#e74c3c"/>
+                    <circle cx="140" cy="100" r="3" fill="#e74c3c"/>
+                    <circle cx="60" cy="100" r="3" fill="#e74c3c"/>
+                    <text x="100" y="140" text-anchor="middle" font-size="12">1 Conic</text>
+                    <path d="M 180 75 L 220 75" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7"/></marker></defs>
+                    <line x1="260" y1="50" x2="380" y2="50" stroke="#3498db" stroke-width="2"/>
+                    <line x1="260" y1="100" x2="380" y2="100" stroke="#3498db" stroke-width="2"/>
+                    <circle cx="270" cy="50" r="3" fill="#e74c3c"/>
+                    <circle cx="320" cy="50" r="3" fill="#e74c3c"/>
+                    <circle cx="370" cy="50" r="3" fill="#e74c3c"/>
+                    <circle cx="280" cy="100" r="3" fill="#e74c3c"/>
+                    <circle cx="350" cy="100" r="3" fill="#e74c3c"/>
+                    <text x="320" y="140" text-anchor="middle" font-size="12">2 Lines</text>
+                </svg>
+            </div>
+            <div class="theorem" style="border-left: 5px solid #e74c3c;">
+                <h3 style="margin-top: 0; color: #c0392b;">The 19th Century Crisis</h3>
+                <p style="text-align: left;">
+                    Schubert's "Principle of Conservation of Number" claimed the count should be invariant. But how do we formally justify counting a "union of two lines" as "one conic"? This lack of rigor led to <strong>Hilbert's 15th Problem</strong>: to place Schubert's calculus on a firm foundation.
+                </p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>The Modern Approach: Gromov & Kontsevich</h1>
+            <p style="text-align: left; max-width: 800px; margin: 1em auto;">
+                The breakthrough came in two stages, combining ideas from analysis and algebraic geometry.
+            </p>
+            <ul style="text-align: left; max-width: 800px; margin: 0 auto;">
+                <li>
+                    <strong>Gromov's Insight (1985):</strong> Redefine "curves" as <span class="highlight">pseudoholomorphic curves</span>. These are maps u: Σ → X which solve a generalization of the Cauchy-Riemann equation:
+                    <div class="center-text" style="text-align:center; margin: 0.5em 0;">
+                        <span class="math" style="font-size:1.4em">∂̄_J u = 0</span>
+                    </div>
+                </li>
+                <li>
+                    <strong>The Challenge:</strong> The space of these solutions—the <span class="highlight">moduli space</span>—is often singular. One cannot simply "count" the points in it.
+                </li>
+                 <li>
+                    <strong>Kontsevich's Solution (1994):</strong> He provided the tools (moduli of stable maps) to construct a <span class="highlight">"virtual fundamental class"</span> on this space, allowing a rigorous "virtual" count.
+                </li>
+            </ul>
+            <div class="center-text" style="margin-top: 1.5em; font-size: 1.2em; color: #27ae60; text-align:center;">
+                <strong>This fusion of analysis and algebra is Gromov-Witten Theory.</strong>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>From Closed Curves to Open Curves</h1>
+            <div class="comparison-box">
+                <div class="comparison-item">
+                    <h2 style="color: #3498db;">Classical/Kontsevich</h2>
+                    <p><strong>Closed curves</strong><br>(Spheres)</p>
+                </div>
+                <div class="arrow">&rarr;</div>
+                <div class="comparison-item">
+                    <h2 style="color: #e67e22;">Modern Extension</h2>
+                    <p><strong>Open curves (Disks)</strong><br>with boundary on Lagrangians</p>
+                </div>
+            </div>
+            <ul>
+                <li>Counting open curves brings new, subtle challenges that don't exist in the closed case.</li>
+                <li>The boundary condition fundamentally changes the nature of the degenerations.</li>
+                <li>This requires a new theoretical framework: <strong>Open Gromov-Witten Theory</strong>.</li>
+            </ul>
+        </div>
+        
+        <div class="slide">
+            <h1>Problem #1: Disk Bubbling</h1>
+            <p>A key difference appears when we analyze the dimensions of degenerations.</p>
+            
+            <!-- Main illustration showing disk bubbling -->
+            <div style="text-align: center; margin: 2em 0;">
+                <svg width="700" height="280" viewBox="0 0 700 280">
+                    <!-- Background -->
+                    <defs>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50"/>
+                        </marker>
+                        <pattern id="lagrangianPattern" patternUnits="userSpaceOnUse" width="4" height="4">
+                            <rect width="4" height="4" fill="#ecf0f1"/>
+                            <path d="M0,2 L4,2" stroke="#95a5a6" stroke-width="0.5"/>
+                        </pattern>
+                    </defs>
+                    
+                    <!-- Left side: Stable disk configuration -->
+                    <g transform="translate(50, 40)">
+                        <text x="100" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#27ae60">Stable Configuration</text>
+                        
+                        <!-- Lagrangian (thick horizontal line) -->
+                        <line x1="20" y1="180" x2="180" y2="180" stroke="#2c3e50" stroke-width="4"/>
+                        <text x="100" y="200" text-anchor="middle" font-size="12" fill="#2c3e50">Lagrangian L</text>
+                        
+                        <!-- Main disk -->
+                        <path d="M 50 180 Q 100 80 150 180" fill="none" stroke="#3498db" stroke-width="3"/>
+                        <path d="M 50 180 L 150 180" stroke="#3498db" stroke-width="3"/>
+                        
+                        <!-- Disk interior (light blue) -->
+                        <path d="M 50 180 Q 100 80 150 180 L 150 180 L 50 180 Z" fill="#3498db" fill-opacity="0.2"/>
+                        
+                        <!-- Constraint points -->
+                        <circle cx="80" cy="120" r="3" fill="#e74c3c"/>
+                        <circle cx="120" cy="100" r="3" fill="#e74c3c"/>
+                        <text x="80" y="110" text-anchor="middle" font-size="10" fill="#e74c3c">Q₁</text>
+                        <text x="120" y="90" text-anchor="middle" font-size="10" fill="#e74c3c">Q₂</text>
+                        
+                        <!-- Label -->
+                        <text x="100" y="230" text-anchor="middle" font-size="11" fill="#27ae60">Count = 1</text>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <path d="M 280 140 L 320 140" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <text x="300" y="130" text-anchor="middle" font-size="10" fill="#2c3e50">deformation</text>
+                    
+                    <!-- Right side: Disk with bubble -->
+                    <g transform="translate(350, 40)">
+                        <text x="100" y="20" text-anchor="middle" font-size="14" font-weight="bold" fill="#e74c3c">With Disk Bubble</text>
+                        
+                        <!-- Lagrangian -->
+                        <line x1="20" y1="180" x2="180" y2="180" stroke="#2c3e50" stroke-width="4"/>
+                        <text x="100" y="200" text-anchor="middle" font-size="12" fill="#2c3e50">Lagrangian L</text>
+                        
+                        <!-- Main disk -->
+                        <path d="M 50 180 Q 90 90 130 180" fill="none" stroke="#3498db" stroke-width="3"/>
+                        <path d="M 50 180 L 130 180" stroke="#3498db" stroke-width="3"/>
+                        <path d="M 50 180 Q 90 90 130 180 L 130 180 L 50 180 Z" fill="#3498db" fill-opacity="0.2"/>
+                        
+                        <!-- Bubble disk (smaller, attached) -->
+                        <circle cx="130" cy="180" r="25" fill="none" stroke="#e67e22" stroke-width="3"/>
+                        <path d="M 105 180 A 25 25 0 0 1 155 180" fill="#e67e22" fill-opacity="0.2"/>
+                        
+                        <!-- Connection point -->
+                        <circle cx="130" cy="180" r="2" fill="#2c3e50"/>
+                        
+                        <!-- Constraint points -->
+                        <circle cx="75" cy="125" r="3" fill="#e74c3c"/>
+                        <circle cx="110" cy="105" r="3" fill="#e74c3c"/>
+                        <text x="75" y="115" text-anchor="middle" font-size="10" fill="#e74c3c">Q₁</text>
+                        <text x="110" y="95" text-anchor="middle" font-size="10" fill="#e74c3c">Q₂</text>
+                        
+                        <!-- Bubble label -->
+                        <text x="145" y="160" text-anchor="middle" font-size="10" fill="#e67e22">bubble</text>
+                        
+                        <!-- Label -->
+                        <text x="100" y="230" text-anchor="middle" font-size="11" fill="#e74c3c">Count = 2</text>
+                    </g>
+                    
+                    <!-- Codimension annotations -->
+                    <text x="150" y="270" text-anchor="middle" font-size="12" fill="#27ae60" font-weight="bold">Sphere bubbling: codim 2</text>
+                    <text x="450" y="270" text-anchor="middle" font-size="12" fill="#e74c3c" font-weight="bold">Disk bubbling: codim 1</text>
+                </svg>
+            </div>
+            
+            <div style="display: flex; justify-content: space-around; align-items: flex-start; margin: 1em 0;">
+                <div style="flex: 1; text-align: center; margin: 0 1em;">
+                    <h3 style="color: #27ae60;">Sphere Bubbling (OK)</h3>
+                    <p style="font-size: 1.1em;">A sphere splitting from another sphere is a <strong>codimension 2</strong> phenomenon. We can choose generic conditions to avoid it.</p>
+                </div>
+                <div style="flex: 1; text-align: center; margin: 0 1em;">
+                    <h3 style="color: #e74c3c;">Disk Bubbling (Problem!)</h3>
+                    <p style="font-size: 1.1em;">A disk bubbling off another disk with the same boundary is only <strong>codimension 1</strong>. It's a "wall" in the moduli space you cannot avoid.</p>
+                </div>
+            </div>
+            <div class="theorem" style="border-left: 5px solid #e74c3c;">
+                <h3>Why This Breaks Invariance</h3>
+                <p style="text-align: left;">As you vary parameters, you inevitably cross these codimension-1 walls. When you cross, a pair of disks can appear or disappear, making the naive count jump discontinuously!</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>A Special Solution: Welschinger Invariants</h1>
+            <p>For a special class of "real" problems, Welschinger (2005) found a clever solution.</p>
+            <ul>
+                <li><strong>The Setup:</strong> Requires an anti-symplectic involution σ: X → X (a "real structure").</li>
+                <li>The Lagrangian L must be the fixed set of this symmetry: L = Fix(σ).</li>
+                <li><strong>The Trick:</strong> The involution forces disk bubbles to be created in conjugate pairs.
+                    <div class="illustration-box" style="padding: 10px;">
+                        <p>[Illustration showing one disk bubble with a "+1" sign and its "conjugate twin" with a "-1" sign.]</p>
+                    </div>
+                </li>
+            </ul>
+             <div class="highlight center-text" style="margin-top: 1em; padding: 15px; text-align: center;">
+                <strong>The Miracle of Cancellation:</strong> The two bubbles contribute to the count with opposite signs, so their net effect is zero. The total count remains invariant!
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Our Challenge: No Symmetry to Help</h1>
+            <div class="theorem">
+                <h3>The Chiang Lagrangian has no anti-symplectic involution.</h3>
+                <p style="text-align:left;">The cancellation trick of Welschinger's theory <strong>does not apply</strong>. The disk bubbling problem is real, and its effects must be countered by the algebraic structure of the theory itself (the A∞-corrections).</p>
+            </div>
+            <hr>
+            <p style="font-size: 1.4em; color: #c0392b; text-align: center;">This is not the only problem...</p>
+            <p style="text-align: center; font-size: 1.3em;">There is another, more subtle way the count can be spoiled.</p>
+        </div>
+
+        <div class="slide">
+            <h1>Problem #2: Disks Morphing into Spheres</h1>
+            <ul>
+                <li>Consider counting disks with interior constraints Qᵢ, but no fixed boundary points.</li>
+                <li>For certain homology classes, a disk's boundary can homologically shrink to a point.</li>
+                <li>As we move the points Qᵢ, the disk can "puff out" and detach from L, becoming a sphere.</li>
+            </ul>
+            <div class="illustration-box">
+                 <p>[Illustration of a disk with boundary on a line L, passing through points Q. An arrow labeled "Deform Q" points to a sphere, detached from L, still passing through Q.]</p>
+            </div>
+            <div class="theorem" style="border-left-color: #e74c3c;">
+                <h3 style="color: #c0392b;">Problem</h3>
+                <p style="text-align: left;">The number of disks is not constant because the objects we count can change their topological type. The invariant is spoiled again, for a different reason.</p>
+            </div>
+        </div>
+
+        <div class="slide">
+            <h1>Fixing the Count: Capping Chains</h1>
+            <p>To fix this, we modify the counting problem. We introduce a new object and a new rule.</p>
+            <ul>
+                <li><strong>Step 1 (The Object):</strong> Choose a "capping chain" C, which is an (n+1)-chain whose boundary is the Lagrangian L (i.e., ∂C = L).</li>
+                <li style="list-style-type: none;"><br></li>
+                <li><strong>Step 2 (The Rule):</strong> The new invariant is a combined count:
+                    <div class="center-text" style="font-size: 1.3em; margin: 0.5em 0;">
+                        <span style="color: #e67e22;">(Number of Disks on L)</span> + <span style="color: #3498db;">(Number of Spheres intersecting C once)</span>
+                    </div>
+                </li>
+            </ul>
+             <div class="illustration-box">
+                 <p>[Illustration showing the moduli space of disks and the moduli space of spheres being "glued" along their common boundary to form a new, closed moduli space with no boundary.]</p>
+            </div>
+            <p style="text-align: center; color: #27ae60; font-weight: bold;">This new combined count *is* a well-defined invariant!</p>
+        </div>
+
+        <div class="slide">
+            <h1>The Algebraic Price of Invariance</h1>
+            <p>The new invariant is well-defined, but it now depends on our choice of the capping chain C.</p>
+            <ul>
+                <li>This geometric choice of C corresponds to a purely algebraic choice.</li>
+                <li>We must choose a <span class="highlight">left inverse</span>, denoted P_ℝ, for the natural map from the cohomology of the Lagrangian to the relative cohomology of the pair (X, L):
+                <div class="center-text" style="text-align:center; margin: 0.5em 0;">
+                     y: H^n(L; ℝ) → H^{n+1}(X,L; ℝ)
+                </div>
+                </li>
+                 <li>The map P_ℝ formalizes the "count of intersections with C" and becomes part of the algebraic structure of the theory.</li>
+            </ul>
+            <hr>
+            <p style="text-align: center;">We trade a spoiled number for a good number that depends on a new piece of algebraic data. This is a cornerstone of relative quantum cohomology.</p>
+        </div>
+
+        <div class="slide">
+            <h1>Our Specific Setting: The Chiang Lagrangian</h1>
+            <ul>
+                <li>We study the <strong>Chiang Lagrangian</strong> <span class="math">L ⊂ ℂP³</span>.</li>
+                <li>Goal: Compute <span class="highlight">open Gromov-Witten disk invariants</span> and its relative quantum cohomology.</li>
+                <li>These invariants must handle all the problems we've discussed:
+                    <ul>
+                        <li>Disk bubbling without a cancelling symmetry.</li>
+                        <li>The potential for disk-sphere degenerations.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h1>What Makes This Interesting?</h1>
+            <ul>
+                <li><strong>Geometric novelty:</strong> First computation for a Lagrangian without anti-symplectic symmetry.</li>
+                <li><strong>Technical innovation:</strong> We use the theory of "axial disks" developed by Evans-Lekili and Smith.</li>
+                <li><strong>Surprising arithmetic:</strong> All invariant denominators are <span class="highlight">powers of 2</span>.</li>
+                <li><strong>Unexpected behavior:</strong> Invariants show <span class="highlight">periodic behavior</span> with periods 8 and 16.</li>
+                <li><strong>Non-monotonic growth:</strong> Magnitude doesn't always increase with degree.</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h1>Key Results</h1>
+            <div class="theorem">
+                <h3>Main Theorem</h3>
+                <p>We compute all open Gromov-Witten disk invariants of the Chiang Lagrangian <span class="math">L</span> and establish their relative quantum cohomology.</p>
+            </div>
+            <ul>
+                <li><strong>Basic invariants:</strong> We characterize a class of invariants that coincide with straightforward counts of J-holomorphic disks.</li>
+                <li><strong>Recursive structure:</strong> Open WDVV equations determine all invariants from the basic ones.</li>
+                <li><strong>Correction terms:</strong> We proved these are nontrivial for many invariants.</li>
+                <li><strong>Mixed invariants:</strong> We found nonvanishing mixed disk-sphere invariants.</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h1>The Arithmetic Mystery</h1>
+            <p class="center-text" style="font-size: 1.4em; margin-bottom: 1em; text-align: center;">
+                <strong>All invariant denominators are powers of 2</strong>
+            </p>
+            <ul>
+                <li>This reveals hidden <span class="highlight">arithmetic structure</span> in the open WDVV equations.</li>
+                <li>Invariants exhibit <strong>periodic behavior</strong> with periods of 8 and 16.</li>
+                <li><strong>Question:</strong> What geometric principle underlies this arithmetic?</li>
+                <li>This suggests deep connections between Symplectic Geometry, Number Theory, and Algebraic Topology.</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h1>Technical Innovation: Axial Disks</h1>
+            <ul>
+                <li><strong>Problem:</strong> How to compute when there's no anti-symplectic involution?</li>
+                <li><strong>Solution:</strong> Use the theory of <span class="highlight">axial disks</span> (Evans-Lekili, Smith).</li>
+                <li><strong>Key insight:</strong> Some disks ("basic invariants") can be counted directly.</li>
+                <li><strong>Strategy:</strong>
+                    <ol style="text-align: left; margin: 1em auto; max-width: 700px;">
+                        <li>Identify which invariants are basic.</li>
+                        <li>Compute them using axial disk theory.</li>
+                        <li>Use open WDVV equations to find all others recursively.</li>
+                    </ol>
+                </li>
+                <li>This approach is <span class="highlight">completely new</span> for this type of Lagrangian.</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h1>Future Directions & Questions</h1>
+            <ul>
+                <li><strong>Arithmetic structure:</strong> Can we explain the powers of 2 phenomenon?</li>
+                <li><strong>Periodicity:</strong> What causes the periods of 8 and 16?</li>
+                <li><strong>Generalization:</strong> Do other Lagrangians show similar behavior?</li>
+                <li><strong>Mirror symmetry:</strong> What do these invariants tell us about the mirror?</li>
+                <li><strong>Applications:</strong> Can this technique work for other non-symmetric Lagrangians?</li>
+            </ul>
+            <div class="center-text" style="margin-top: 2em; font-size: 1.3em; color: #2980b9; text-align: center;">
+                <strong>This opens up a new frontier in quantum cohomology!</strong>
+            </div>
+        </div>
+
+        <div class="slide">
+            <div class="center-text">
+                <h1 style="font-size: 3em; margin-bottom: 1em; color: #2c3e50;">Thank You!</h1>
+                <p style="font-size: 1.4em; color: #34495e; margin-bottom: 2em;">Questions?</p>
+                <hr style="width: 60%; margin: 2em auto;">
+                <p style="font-size: 1.1em; color: #7f8c8d;">
+                    <strong>Relative Quantum Cohomology of the Chiang Lagrangian</strong><br>
+                    A. Hollands, <span class="speaker">E. Kosloff</span>, M. Sela, Q. Shu, J.P. Solomon
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+          Arrow keys | Space = Next | F11 = Fullscreen
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">18</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                    prevSlide();
+                    break;
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case ' ':
+                    nextSlide();
+                    break;
+                case 'Home':
+                    showSlide(0);
+                    break;
+                case 'End':
+                    showSlide(totalSlides - 1);
+                    break;
+            }
+        });
+        // Click navigation
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.slide')) {
+                nextSlide();
+            }
+        });
+    </script>
+</body>
+</html>
