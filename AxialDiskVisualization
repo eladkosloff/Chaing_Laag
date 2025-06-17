@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CP³ Visualization: Axial Disk Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #e5e7eb; /* gray-200 */
+            background-color: #111827; /* gray-900 */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            flex-shrink: 0;
+            padding: 1rem 1.5rem;
+            background-color: #1f2937; /* gray-800 */
+            border-bottom: 1px solid #374151; /* gray-700 */
+            text-align: center;
+        }
+        #main-container {
+            flex-grow: 1;
+            position: relative;
+            min-height: 0;
+        }
+        #main-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #disk-container {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            background-color: rgba(31, 41, 55, 0.7);
+            border-radius: 0.75rem;
+            border: 1px solid #4b5563;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 2rem;
+        }
+        #disk-canvas {
+            width: 250px !important;
+            height: 250px !important;
+            cursor: pointer;
+        }
+        #disk-container h3 {
+            position: absolute;
+            top: 0.75rem;
+            color: #fff;
+            font-weight: bold;
+        }
+        #legend {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: rgba(31, 41, 55, 0.7);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #4b5563;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            width: 280px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .legend-color {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            border: 1px solid #9ca3af;
+        }
+        /* Toggle Switch Styles */
+        #mode-toggle-label .dot {
+            transition: transform 0.2s ease-in-out;
+        }
+        #mode-toggle:checked ~ .dot {
+            transform: translateX(100%);
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1 class="text-xl md:text-2xl font-bold text-white">Axial Disk Map Visualization</h1>
+        <div class="flex justify-center items-center space-x-3 mt-2">
+            <span class="text-gray-400 font-medium">Maslov 2</span>
+            <label for="mode-toggle" id="mode-toggle-label" class="flex items-center cursor-pointer">
+                <div class="relative">
+                    <input type="checkbox" id="mode-toggle" class="sr-only">
+                    <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                    <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full"></div>
+                </div>
+            </label>
+            <span class="text-gray-400 font-medium">Maslov 4</span>
+        </div>
+    </header>
+
+    <div id="main-container">
+        <canvas id="main-canvas"></canvas>
+        <div id="legend">
+            <h3 class="text-lg font-bold mb-2 text-white">Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #d1d5db;"></div>
+                <span>Undistinguished Points</span>
+            </div>
+             <p id="legend-text" class="text-xs text-gray-400 mt-2"></p>
+        </div>
+         <div id="disk-container">
+            <h3>Holomorphic Disk (D)</h3>
+            <canvas id="disk-canvas"></canvas>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // ===================================================================
+        // === STATE AND CONSTANTS ===========================================
+        // ===================================================================
+        let currentMode = 'maslov2';
+
+        // ===================================================================
+        // === COMPLEX NUMBER HELPER =========================================
+        // ===================================================================
+        class Complex {
+            constructor(re = 0, im = 0) { this.re = re; this.im = im; }
+            abs() { return Math.sqrt(this.re * this.re + this.im * this.im); }
+            angle() { return Math.atan2(this.im, this.re); }
+            sqrt() {
+                const r = Math.sqrt(this.abs());
+                const angle = this.angle() / 2;
+                return new Complex(r * Math.cos(angle), r * Math.sin(angle));
+            }
+            divideScalar(s) { return new Complex(this.re / s, this.im / s); }
+        }
+
+        // ===================================================================
+        // === 3D SCENE SETUP ================================================
+        // ===================================================================
+        const mainContainer = document.getElementById('main-container');
+        const mainCanvas = document.getElementById('main-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, mainContainer.clientWidth / mainContainer.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 2.5);
+
+        const renderer = new THREE.WebGLRenderer({ canvas: mainCanvas, antialias: true, alpha: true });
+        renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.minDistance = 1.2;
+        controls.maxDistance = 10;
+        
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(2, 3, 5);
+        scene.add(directionalLight);
+        
+        const sphereGeometry = new THREE.SphereGeometry(1, 64, 64);
+        const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0x4b5563, transparent: true, opacity: 0.15 });
+        scene.add(new THREE.Mesh(sphereGeometry, sphereMaterial));
+
+        const wireframeGeometry = new THREE.SphereGeometry(1.001, 32, 32);
+        const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x6b7280, wireframe: true, transparent: true, opacity: 0.1 });
+        scene.add(new THREE.Mesh(wireframeGeometry, wireframeMaterial));
+        
+        const pointGeometry = new THREE.SphereGeometry(0.05, 32, 32);
+        const pointMaterial = new THREE.MeshStandardMaterial({ color: 0xd1d5db, roughness: 0.4 });
+
+        const c1 = new THREE.Mesh(pointGeometry, pointMaterial);
+        const c2 = new THREE.Mesh(pointGeometry, pointMaterial);
+        const c3 = new THREE.Mesh(pointGeometry, pointMaterial);
+        scene.add(c1, c2, c3);
+
+        const axesHelper = new THREE.AxesHelper(1.5); // X=red, Y=green, Z=blue
+        scene.add(axesHelper);
+
+        // ===================================================================
+        // === 2D DISK SCENE SETUP ===========================================
+        // ===================================================================
+        const diskCanvas = document.getElementById('disk-canvas');
+        const diskScene = new THREE.Scene();
+        const diskCamera = new THREE.OrthographicCamera(-1.1, 1.1, 1.1, -1.1, 1, 10);
+        diskCamera.position.z = 5;
+
+        const diskRenderer = new THREE.WebGLRenderer({ canvas: diskCanvas, antialias: true, alpha: true });
+        diskRenderer.setSize(250, 250);
+        
+        diskScene.add(new THREE.Mesh(new THREE.CircleGeometry(1, 64), new THREE.MeshBasicMaterial({ color: 0x9ca3af, transparent: true, opacity: 0.3 })));
+        
+        const diskPointer = new THREE.Mesh(new THREE.CircleGeometry(0.08, 32), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+        diskPointer.position.z = 0.1;
+        diskScene.add(diskPointer);
+
+        // ===================================================================
+        // === MAPPING AND INTERACTION LOGIC =================================
+        // ===================================================================
+        const legendText = document.getElementById('legend-text');
+
+        function inverseStereographic(w) {
+            const w_abs2 = w.re * w.re + w.im * w.im;
+            const D = 1 + w_abs2;
+            return new THREE.Vector3(2 * w.re / D, (w_abs2 - 1) / D, -2 * w.im / D);
+        }
+
+        function updatePointsOnSphere(z) {
+            if (currentMode === 'maslov2') {
+                c1.visible = true; c2.visible = true; c3.visible = true;
+                c1.position.set(0, 1, 0); // Fixed at North Pole
+                const w_base = z.divideScalar(3).sqrt();
+                c2.position.copy(inverseStereographic(w_base));
+                c3.position.copy(inverseStereographic(new Complex(-w_base.re, -w_base.im)));
+            } else { // maslov4
+                c1.visible = true; c2.visible = true; c3.visible = true;
+                const rho = z.abs(); // 0 to 1
+                const phi = z.angle(); // -PI to PI
+
+                // CORRECTED MAPPING for Maslov 4
+                // The pole r=(0,-1,0) in math coords is (0,0,1) in our THREE.js Y-up coords.
+                // We create latitudes around the Z-axis.
+                // Let rho=0 be the pole r and rho=1 be the equator.
+                const colatitude = rho * Math.PI / 2; 
+
+                const z_coord = Math.cos(colatitude);
+                const lat_radius = Math.sin(colatitude);
+                
+                // The three points of an equilateral triangle on this latitude, rotated by phi
+                c1.position.set(lat_radius * Math.cos(phi), lat_radius * Math.sin(phi), z_coord);
+                c2.position.set(lat_radius * Math.cos(phi + 2 * Math.PI / 3), lat_radius * Math.sin(phi + 2 * Math.PI / 3), z_coord);
+                c3.position.set(lat_radius * Math.cos(phi + 4 * Math.PI / 3), lat_radius * Math.sin(phi + 4 * Math.PI / 3), z_coord);
+            }
+        }
+
+        function updateLegend() {
+            if (currentMode === 'maslov2') {
+                legendText.textContent = 'One point is fixed at the North Pole (Y-axis). The other two collide at the South Pole when z=0.';
+            } else {
+                legendText.textContent = 'All three points form an equilateral triangle on a line of latitude around the pole r (Z-axis). They collide at r when z=0.';
+            }
+        }
+        
+        const mouse = new THREE.Vector2();
+        let isDragging = false;
+        
+        function onDiskInteraction(event) {
+            event.preventDefault();
+            const rect = diskCanvas.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+            
+            const dist = Math.sqrt(mouse.x * mouse.x + mouse.y * mouse.y);
+            if (dist > 1) { mouse.x /= dist; mouse.y /= dist; }
+            
+            diskPointer.position.set(mouse.x, mouse.y, 0.1);
+            updatePointsOnSphere(new Complex(mouse.x, mouse.y));
+        }
+
+        const modeToggle = document.getElementById('mode-toggle');
+        modeToggle.addEventListener('change', () => {
+            currentMode = modeToggle.checked ? 'maslov4' : 'maslov2';
+            // Reset to origin on toggle
+            diskPointer.position.set(0, 0, 0.1);
+            updatePointsOnSphere(new Complex(0, 0));
+            updateLegend();
+        });
+
+        diskCanvas.addEventListener('mousedown', (e) => { isDragging = true; onDiskInteraction(e); });
+        diskCanvas.addEventListener('mousemove', (e) => { if (isDragging) onDiskInteraction(e); });
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        // ===================================================================
+        // === INITIALIZATION & ANIMATION ====================================
+        // ===================================================================
+        updatePointsOnSphere(new Complex(0,0));
+        updateLegend();
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+            diskRenderer.render(diskScene, diskCamera);
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = mainContainer.clientWidth / mainContainer.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(mainContainer.clientWidth, mainContainer.clientHeight);
+        }, false);
+        
+        animate();
+    </script>
+</body>
+</html>
